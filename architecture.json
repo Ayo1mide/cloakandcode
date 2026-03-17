@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "name": "Desktop Shell",
+      "tech": ["Tauri", "Rust", "React"],
+      "responsibilities": [
+        "Secure vault using OS Keychain (keyring/stronghold) for BYOK API keys",
+        "Process manager to start/stop FastAPI sidecar",
+        "Settings UI: license key entry, toggle cloak on/off, provider selection"
+      ]
+    },
+    {
+      "name": "Security Engine",
+      "tech": ["Python 3.11", "FastAPI", "Presidio", "spaCy"],
+      "responsibilities": [
+        "Localhost proxy on 127.0.0.1:8080",
+        "PII redaction and secret tokenization (RAM only)",
+        "Dynamic routing to OpenAI/Anthropic/Perplexity/Gemini/Ollama via provider registry",
+        "Fetch API keys from OS Keychain at request time; never persist in files",
+        "Kill switch pass-through mode",
+        "Licensing and smart renewal via Lemon Squeezy"
+      ]
+    },
+    {
+      "name": "Access Points",
+      "tech": ["Chrome MV3 extension", "IDE HTTP proxy settings"],
+      "responsibilities": [
+        "Extension intercepts chat inputs, sends to /redact for cleaning, forwards to site",
+        "IDE traffic routed to localhost proxy; redaction + key injection handled centrally"
+      ]
+    }
+  ],
+  "data_flow": [
+    "Extension/IDE sends request to http://127.0.0.1:8080/redact or passthrough endpoint",
+    "Security Engine redacts PII/secrets, tokenizes, and retrieves provider API key from Keychain",
+    "Security Engine forwards scrubbed request + key to the appropriate provider",
+    "Response returned, tokens restored, delivered back to Extension/IDE"
+  ],
+  "principles": [
+    "Strict BYOK: API keys only in memory, loaded from keychain, never written to disk or logs",
+    "Local-first: server binds to localhost only; no content leaves the machine unredacted",
+    "Modular: providers pluggable; UI/Engine/Access layers decoupled"
+  ]
+}

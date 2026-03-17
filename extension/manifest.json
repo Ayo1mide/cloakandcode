@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Cloak and Code",
+  "description": "Local-first privacy shield for AI chats (chat.openai.com, claude.ai).",
+  "version": "1.0.0",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["https://chat.openai.com/*", "https://claude.ai/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Cloak and Code"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chat.openai.com/*", "https://claude.ai/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
